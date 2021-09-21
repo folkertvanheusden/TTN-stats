@@ -387,10 +387,12 @@ print('<h2 id="at">air time per hour</h2>')
 
 c.execute('select h, avg(ms_airtime) as avg_ma, min(ms_airtime) as minimum, max(ms_airtime) as maximum from (select hour(time) as h, sum(size * 8 / bits_s * 1000) as ms_airtime from rxpk, (select bits_s from rxpk, data_rates where datr_str=rxpk.datr) as rate group by date(time), hour(time)) as bla group by h')
 
-print('<table><tr><th>hour</th><th>minimum</th><th>avg % of hour</th><th>avg total</th><th>maximum</th></tr>')
+print('<table><tr><th>hour</th><th>minimum</th><th>maximum</th><th>avg % of hour</th><th>avg total</th><th></th></tr>')
 
 for (h, avg_ma, minimum, maximum) in c:
-    print(f'<tr><td>{h}</td><td>{minimum:.2f}ms</td><td>{avg_ma * 100 / 3600000:.2f}%</td><td>{avg_ma:.2f}ms</td><td>{maximum:.2f}ms</td></tr>')
+    stars = '&#9619;' * int(30 * (avg_ma / 3600000))
+
+    print(f'<tr><td>{h}</td><td>{minimum:.2f}ms</td><td>{maximum:.2f}ms</td><td>{avg_ma * 100 / 3600000:.2f}%</td><td>{avg_ma:.2f}ms</td><td>{stars}</tr>')
 
 print('</table>')
 

@@ -127,10 +127,11 @@ print('<h2 id="datr">datr</h2>')
 c = mydb.cursor()
 c.execute('select datr, count(*) as n from rxpk group by datr')
 
-print('<table><tr><th>datr</th><th>%</th><th>#</th></tr>')
+print('<table><tr><th>datr</th><th>%</th><th>#</th><th></th></tr>')
 
 for (datr, n) in c:
-    print(f'<tr><td>{datr}</td><td>{n * 100 / n_rows:.2f}</td><td>{n}</td></tr>')
+    stars = '&#9619;' * int(30 * (n / n_rows))
+    print(f'<tr><td>{datr}</td><td>{n * 100 / n_rows:.2f}</td><td>{n}</td><td>{stars}</td></tr>')
 
 print('</table>')
 print('</div>')
@@ -143,10 +144,11 @@ print('<h2 id="codr">codr</h2>')
 c = mydb.cursor()
 c.execute('select codr, count(*) as n from rxpk group by codr')
 
-print('<table><tr><th>codr</th><th>%</th><th>#</th></tr>')
+print('<table><tr><th>codr</th><th>%</th><th>#</th><th></th></tr>')
 
 for (codr, n) in c:
-    print(f'<tr><td>{codr}</td><td>{n * 100 / n_rows:.2f}</td><td>{n}</td></tr>')
+    stars = '&#9619;' * int(30 * (n / n_rows))
+    print(f'<tr><td>{codr}</td><td>{n * 100 / n_rows:.2f}</td><td>{n}</td><td>{stars}</td></tr>')
 
 print('</table>')
 print('</div>')
@@ -159,10 +161,11 @@ print('<h2 id="chan">chan</h2>')
 c = mydb.cursor()
 c.execute('select chan, count(*) as n from rxpk group by chan')
 
-print('<table><tr><th>chan</th><th>%</th><th>#</th></tr>')
+print('<table><tr><th>chan</th><th>%</th><th>#</th><th></th></tr>')
 
 for (chan, n) in c:
-    print(f'<tr><td>{chan}</td><td>{n * 100 / n_rows:.2f}</td><td>{n}</td></tr>')
+    stars = '&#9619;' * int(30 * (n / n_rows))
+    print(f'<tr><td>{chan}</td><td>{n * 100 / n_rows:.2f}</td><td>{n}</td><td>{stars}</td></tr>')
 
 print('</table>')
 print('</div>')
@@ -175,10 +178,11 @@ print('<h2 id="freq">freq</h2>')
 c = mydb.cursor()
 c.execute('select freq, count(*) as n from rxpk group by freq')
 
-print('<table><tr><th>freq</th><th>%</th><th>#</th></tr>')
+print('<table><tr><th>freq</th><th>%</th><th>#</th><th></th></tr>')
 
 for (freq, n) in c:
-    print(f'<tr><td>{freq}MHz</td><td>{n * 100 / n_rows:.2f}</td><td>{n}</td></tr>')
+    stars = '&#9619;' * int(30 * (n / n_rows))
+    print(f'<tr><td>{freq}MHz</td><td>{n * 100 / n_rows:.2f}</td><td>{n}</td><td>{stars}</td></tr>')
 
 print('</table>')
 print('</div>')
@@ -191,7 +195,7 @@ print('<h2 id="mtype">mtype</h2>')
 c = mydb.cursor()
 c.execute('select mtype, count(*) as n from rxpk group by mtype')
 
-print('<table><tr><th>message type</th><th>%</th><th>#</th></tr>')
+print('<table><tr><th>message type</th><th>%</th><th>#</th><th></th></tr>')
 
 for (mtype, n) in c:
     mtype_str = '???'
@@ -213,7 +217,9 @@ for (mtype, n) in c:
     elif mtype == 7:
         mtype_str = 'proprietary'
 
-    print(f'<tr><td>{mtype_str}</td><td>{n * 100 / n_rows:.2f}</td><td>{n}</td></tr>')
+    stars = '&#9619;' * int(30 * (n / n_rows))
+
+    print(f'<tr><td>{mtype_str}</td><td>{n * 100 / n_rows:.2f}</td><td>{n}</td><td>{stars}</td></tr>')
 
 print('</table>')
 print('</div>')
@@ -239,23 +245,16 @@ for (nwkid, n) in c:
 
 data = sorted(data, key=lambda elem: elem[0])
 
-if True:
-#for i in range(0, 1):
-#    part = data[0:len(data)//2] if i == 0 else data[len(data)//2:]
+print('<table>')
 
-    print('<table>')
+print('<tr><th>nwkid</th><th>%</th><th></th></tr>')
+for d in data:
+    stars = '&#9619;' * int(30 * (d[1] / n_rows))
 
-    print('<tr><th>nwkid</th>')
-    for d in data:  # part:
-        print(f'<td title="{netids[d[0]]}">{d[0]:02x}</td>')
-    print('</tr>')
+    print(f'<tr><td title="{netids[d[0]]}">{d[0]:02x}</td>')
+    print(f'<td title="{d[1]}">{d[1] * 100 / n_rows:.2f}</td><td>{stars}</td></tr>')
 
-    print('<tr><th>%</th>')
-    for d in data:  # part:
-        print(f'<td title="{d[1]}">{d[1] * 100 / n_rows:.2f}</td>')
-    print('</tr>')
-
-    print('</table>')
+print('</table>')
 
 print('</div>')
 
@@ -350,13 +349,15 @@ print('<h2 id="fopts">fopts (top 10)</h2>')
 
 c = mydb.cursor()
 
-print('<table><tr><th>fopts</th><th>%</th><th>#</th></tr>')
+print('<table><tr><th>fopts</th><th>%</th><th>#</th><th></th></tr>')
 
 c.execute('select fopts, count(*) as n from rxpk group by fopts order by n desc limit 10')
 for (fopts, n) in c:
+    stars = '&#9619;' * int(30 * (n / n_rows))
+
     fopts = base64.b64encode(fopts)
 
-    print(f'<tr><td>{fopts}</td><td>{n * 100 / n_rows:.2f}</td><td>{n}</td></tr>')
+    print(f'<tr><td>{fopts}</td><td>{n * 100 / n_rows:.2f}</td><td>{n}</td><td>{stars}</td></tr>')
 
 print('</table>')
 print('</div>')

@@ -4,6 +4,10 @@ TTN-stats
 This program collects all messages received from a gateway and puts that in a database.
 Then, via a web-interface statistics of the received LoRa-WAN messages can be viewed.
 
+The program (li.py) sits between the gateway software and the upstream software (e.g.
+The Things Network). If the gateway supports the "Semtech UDP" json-interface, then it
+should work.
+
 
 li.py
 -----

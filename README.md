@@ -29,7 +29,7 @@ Create a database:
 
 Then point your gateway to the ip-address of where the script (li.py) is running. It uses the same port 1700.
 
-For 'hats' for the raspberry pi, this file is /etc/lora-gateway/local_conf.json
+For the "Dragino PG1301 hat' for the Raspberry Pi, this file is /etc/lora-gateway/local_conf.json
 
 
 web interface

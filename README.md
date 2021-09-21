@@ -33,13 +33,13 @@ web interface
 
 Copy the files in a directory and adjust the apache configuration:
 
-<Directory /var/www/htdocs/ttn>
+    <Directory /var/www/htdocs/ttn>
         Options +Indexes +FollowSymLinks +MultiViews +ExecCGI
         AllowOverride None
         Order allow,deny
         allow from all
         AddHandler cgi-script .py
         DirectoryIndex index.py
-</Directory>
+    </Directory>
 
 Adjust the mysql parameters (mysql.connector.connect()) at the top of index.py.

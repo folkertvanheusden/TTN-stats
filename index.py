@@ -66,6 +66,26 @@ netids[0x36] = 'Netze BW GmbH'
 netids[0x37] = 'Tektelic'
 netids[0x38] = 'Charter Communicaton'
 
+def mtype_to_str(m):
+    if mtype == 0:
+        return 'join request'
+    if mtype == 1:
+        return 'join accept'
+    if mtype == 2:
+        return 'unconfirmed data up'
+    if mtype == 3:
+        return 'unconfirmed data down'
+    if mtype == 4:
+        return 'confirmed data up'
+    if mtype == 5:
+        return 'confirmed data down'
+    if mtype == 6:
+        return 'RFU'
+    if mtype == 7:
+        return 'proprietary'
+
+    return '???'
+
 print('Content-Type: text/html')
 print('')
 
@@ -98,6 +118,7 @@ print('<li><a href="#pll">Spreading of payload lengths</a>')
 print('<li><a href="#fopts">fopts frequency (how often are they repeated)</a>')
 print('<li><a href="#mf">Message frequency</a>')
 print('<li><a href="#at">Air time</a>')
+print('<li><a href="#l10">last 10 received messages</a>')
 print('</ul>')
 print('</div>')
 
@@ -198,24 +219,7 @@ c.execute('select mtype, count(*) as n from rxpk group by mtype')
 print('<table><tr><th>message type</th><th>%</th><th>#</th><th></th></tr>')
 
 for (mtype, n) in c:
-    mtype_str = '???'
-
-    if mtype == 0:
-        mtype_str = 'join request'
-    elif mtype == 1:
-        mtype_str = 'join accept'
-    elif mtype == 2:
-        mtype_str = 'unconfirmed data up'
-    elif mtype == 3:
-        mtype_str = 'unconfirmed data down'
-    elif mtype == 4:
-        mtype_str = 'confirmed data up'
-    elif mtype == 5:
-        mtype_str = 'confirmed data down'
-    elif mtype == 6:
-        mtype_str = 'RFU'
-    elif mtype == 7:
-        mtype_str = 'proprietary'
+    mtype_str = mtype_to_str(mtype)
 
     stars = '&#9619;' * int(30 * (n / n_rows))
 
@@ -393,6 +397,22 @@ for (h, avg_ma, minimum, maximum) in c:
     stars = '&#9619;' * int(30 * (avg_ma / 3600000))
 
     print(f'<tr><td>{h}</td><td>{minimum:.2f}ms</td><td>{maximum:.2f}ms</td><td>{avg_ma * 100 / 3600000:.2f}%</td><td>{avg_ma:.2f}ms</td><td>{stars}</tr>')
+
+print('</table>')
+
+print('</div>')
+
+## last 10 messages received ##
+
+print('<div class="container">')
+print('<h2 id="l10">last 10 messages received</h2>')
+
+c.execute('select time, chan, freq, datr, codr, lsnr, rssi, mtype, nwkaddr, (nwkaddr >> 1) & 127 as nwkid from rxpk order by time desc limit 10')
+
+print('<table><tr><th>time</th><th>channel</th><th>frequency</th><th>datr</th><th>codr</th><th>lsnr</th><th>rssi</th><th>mtype</th><th>nwkaddr</th><th>nwkid</th></tr>')
+
+for (time, chan, freq, datr, codr, lsnr, rssi, mtype, nwkaddr, nwkid) in c:
+    print(f'<tr><td>{time}</td><td>{chan}</td><td>{freq}MHz</td><td>{datr}</td><td>{codr}</td><td>{lsnr}dB</td><td>{rssi}dBm</td><td>{mtype_to_str(mtype)}</td><td>{nwkaddr:08x}</td><td>{netids[nwkid]}</td></tr>')
 
 print('</table>')
 

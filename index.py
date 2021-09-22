@@ -106,6 +106,7 @@ print('<div id="toc_container">')
 print('<p class="toc_title">Contents</p>')
 print('<ul class="toc_list">')
 print('<li><a href="#general">General data</a>')
+print('<li><a href="#l10">last 10 received messages</a>')
 print('<li><a href="#datr">DATR - data rate</a>')
 print('<li><a href="#codr">CODR - LoRa ECC coding rate</a>')
 print('<li><a href="#chan">CHAN - Receive channel</a>')
@@ -118,7 +119,6 @@ print('<li><a href="#pll">Spreading of payload lengths</a>')
 print('<li><a href="#fopts">fopts frequency (how often are they repeated)</a>')
 print('<li><a href="#mf">Message frequency</a>')
 print('<li><a href="#at">Air time</a>')
-print('<li><a href="#l10">last 10 received messages</a>')
 print('</ul>')
 print('</div>')
 
@@ -138,6 +138,22 @@ print(f'<tr><td>total number of messages:</td><td>{n_rows}</td></tr>')
 print(f'<tr><td>first message:</td><td>{first}</td></tr>')
 print(f'<tr><td>latest message:</td><td>{latest}</td></tr>')
 print('</table>')
+print('</div>')
+
+## last 10 messages received ##
+
+print('<div class="container">')
+print('<h2 id="l10">last 10 messages received</h2>')
+
+c.execute('select time, chan, freq, datr, codr, lsnr, rssi, mtype, nwkaddr, (nwkaddr >> 1) & 127 as nwkid from rxpk order by time desc limit 10')
+
+print('<table><tr><th>time</th><th>channel</th><th>frequency</th><th>datr</th><th>codr</th><th>lsnr</th><th>rssi</th><th>mtype</th><th>nwkaddr</th><th>nwkid</th></tr>')
+
+for (time, chan, freq, datr, codr, lsnr, rssi, mtype, nwkaddr, nwkid) in c:
+    print(f'<tr><td>{time}</td><td>{chan}</td><td>{freq}MHz</td><td>{datr}</td><td>{codr}</td><td>{lsnr}dB</td><td>{rssi}dBm</td><td>{mtype_to_str(mtype)}</td><td>{nwkaddr:08x}</td><td>{netids[nwkid]}</td></tr>')
+
+print('</table>')
+
 print('</div>')
 
 ## DATR ###
@@ -397,22 +413,6 @@ for (h, avg_ma, minimum, maximum) in c:
     stars = '&#9619;' * int(30 * (avg_ma / 3600000))
 
     print(f'<tr><td>{h}</td><td>{minimum:.2f}ms</td><td>{maximum:.2f}ms</td><td>{avg_ma * 100 / 3600000:.2f}%</td><td>{avg_ma:.2f}ms</td><td>{stars}</tr>')
-
-print('</table>')
-
-print('</div>')
-
-## last 10 messages received ##
-
-print('<div class="container">')
-print('<h2 id="l10">last 10 messages received</h2>')
-
-c.execute('select time, chan, freq, datr, codr, lsnr, rssi, mtype, nwkaddr, (nwkaddr >> 1) & 127 as nwkid from rxpk order by time desc limit 10')
-
-print('<table><tr><th>time</th><th>channel</th><th>frequency</th><th>datr</th><th>codr</th><th>lsnr</th><th>rssi</th><th>mtype</th><th>nwkaddr</th><th>nwkid</th></tr>')
-
-for (time, chan, freq, datr, codr, lsnr, rssi, mtype, nwkaddr, nwkid) in c:
-    print(f'<tr><td>{time}</td><td>{chan}</td><td>{freq}MHz</td><td>{datr}</td><td>{codr}</td><td>{lsnr}dB</td><td>{rssi}dBm</td><td>{mtype_to_str(mtype)}</td><td>{nwkaddr:08x}</td><td>{netids[nwkid]}</td></tr>')
 
 print('</table>')
 

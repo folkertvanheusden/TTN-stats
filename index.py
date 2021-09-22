@@ -297,7 +297,7 @@ for (nwkaddr, a_rssi, a_lsnr, a_size, sd_size, n_msgs, nwkid) in c:
 
     idx += 1
 
-    c2.execute('select avg(size * 8 / bits_s * 1000) as ms_airtime, (select count(*) / ((unix_timestamp(now()) - unix_timestamp(min(time))) / 86400) from rxpk as r where r.nwkaddr = rxpk.nwkaddr) as msgs_per_day, min(time) as first_msg, max(time) as last_msg from rxpk, (select bits_s from rxpk, data_rates where datr_str=rxpk.datr) as rate where rxpk.nwkaddr="%s" group by nwkaddr' % nwkaddr)
+    c2.execute('select avg(size * 8 / bits_s) as ms_airtime, (select count(*) / ((unix_timestamp(now()) - unix_timestamp(min(time))) / 86400) from rxpk as r where r.nwkaddr = rxpk.nwkaddr) as msgs_per_day, min(time) as first_msg, max(time) as last_msg from rxpk, (select bits_s from rxpk, data_rates where datr_str=rxpk.datr) as rate where rxpk.nwkaddr="%s" group by nwkaddr' % nwkaddr)
     row = c2.fetchone()
 
     msgs_per_day = row[1]

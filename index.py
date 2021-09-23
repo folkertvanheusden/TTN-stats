@@ -102,6 +102,8 @@ print('<body>')
 
 print('<h1>LoRaWAN via TTN statistics</h1>')
 
+print('<p><b>NOTE: AIR-TIME CALCULATION IS CURRENTLY OPTIMISTIC</b></p>')
+
 print('<div id="toc_container">')
 print('<p class="toc_title">Contents</p>')
 print('<ul class="toc_list">')
@@ -119,6 +121,7 @@ print('<li><a href="#pll">Spreading of payload lengths</a>')
 print('<li><a href="#fopts">fopts frequency (how often are they repeated)</a>')
 print('<li><a href="#mf">Message frequency</a>')
 print('<li><a href="#at">Air time</a>')
+print('<li><a href="#udev">Number of unique devices per day</a>')
 print('</ul>')
 print('</div>')
 
@@ -426,6 +429,22 @@ for (h, avg_ma, minimum, maximum) in data:
 
 print('</table>')
 
+print('</div>')
+
+## number of unique devices per day ##
+
+print('<div class="container">')
+print('<h2 id="udev">Number of unique devices per day</h2>')
+
+c = mydb.cursor()
+
+print('<table><tr><th>network addrerss</th><th># (count)</th></tr>')
+
+c.execute('select d, count(*) as n from (select date(time) as d, nwkaddr from rxpk group by date(time), nwkaddr) as i group by d')
+for (d, n) in c:
+    print(f'<tr><td>{d}</td><td>{n}</td></tr>')
+
+print('</table>')
 print('</div>')
 
 print('<p><br><br></p>')

@@ -351,15 +351,11 @@ print('</div>')
 print('<div class="container">')
 print('<h2 id="pll">Payload lengths</h2>')
 
-c = mydb.cursor()
-c.execute('select max(size) as max_size from rxpk')
-max_size = c.fetchone()[0]
-
 print('<table><tr><th>size</th><th></th><th>%</th><th>#</th></tr>')
 
 c.execute('select avg(size) as size, count(*) as n from rxpk group by floor(size / 5)')
 for (size, n) in c:
-    stars = '&#9619;' * int(30 * (n / max_size))
+    stars = '&#9619;' * int(30 * (n / n_rows))
 
     print(f'<tr><td>{size:.02f}B</td><td>{stars}</td><td>{n * 100 / n_rows:.2f}</td><td>{n}</td></tr>')
 

@@ -126,11 +126,12 @@ print('</ul>')
 print('</div>')
 
 c = mydb.cursor()
-c.execute('select count(*) as n, min(time) as first, max(time) as latest from rxpk')
+c.execute('select count(*) as n, min(time) as first, max(time) as latest, count(distinct nwkaddr) as n_udev from rxpk')
 row = c.fetchone()
 n_rows = row[0]  # aprox, may change per query
 first = row[1]
 latest = row[2]
+n_udev = row[3]
 
 ## DATR ###
 
@@ -138,6 +139,7 @@ print('<div class="container">')
 print('<h2 id="general">General</h2>')
 print('<table>')
 print(f'<tr><td>total number of messages:</td><td>{n_rows}</td></tr>')
+print(f'<tr><td>total number of unique devices:</td><td>{n_udev}</td></tr>')
 print(f'<tr><td>first message:</td><td>{first}</td></tr>')
 print(f'<tr><td>latest message:</td><td>{latest}</td></tr>')
 print('</table>')
@@ -438,11 +440,28 @@ print('<h2 id="udev">Number of unique devices per day</h2>')
 
 c = mydb.cursor()
 
-print('<table><tr><th>network addrerss</th><th># (count)</th></tr>')
+print('<table><tr><th>date</th><th># (count)</th></tr>')
 
 c.execute('select d, count(*) as n from (select date(time) as d, nwkaddr from rxpk group by date(time), nwkaddr) as i group by d')
 for (d, n) in c:
     print(f'<tr><td>{d}</td><td>{n}</td></tr>')
+
+print('</table>')
+print('</div>')
+
+## number of unique devices per hour ##
+
+print('<div class="container">')
+print('<h2 id="udev">Number of unique devices per hour</h2>')
+
+c = mydb.cursor()
+
+print('<table><tr><th>hour</th><th># (count)</th><th></th></tr>')
+
+c.execute('select h, count(*) from (select hour(time) as h, nwkaddr from rxpk group by hour(time), nwkaddr) as i group by h')
+for (d, n) in c:
+    stars = '&#9619;' * int(30 * (n / n_udev))
+    print(f'<tr><td>{d}</td><td>{n}</td><td>{stars}</td></tr>')
 
 print('</table>')
 print('</div>')

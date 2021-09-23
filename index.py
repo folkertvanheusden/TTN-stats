@@ -92,7 +92,7 @@ print('')
 print('<!DOCTYPE html>')
 print('<html>')
 print('<head>')
-print('<title>LoRaWAN via TTN statistics</title>')
+print('<title>TTN via LoRaWAN statistics</title>')
 print('<link href="stylesheet.css" rel="stylesheet" type="text/css">')
 print('<meta name="viewport" content="width=device-width, initial-scale=1">')
 print('<meta http-equiv="refresh" content="300"/>')
@@ -100,7 +100,7 @@ print('<link rel="icon" type="image/svg+xml" href="favicon.svg">')
 print('</head>')
 print('<body>')
 
-print('<h1>LoRaWAN via TTN statistics</h1>')
+print('<h1>TTN via LoRaWAN statistics</h1>')
 
 print('<p><b>NOTE: AIR-TIME CALCULATION IS CURRENTLY OPTIMISTIC</b></p>')
 
@@ -253,7 +253,6 @@ print('</div>')
 
 print('<div class="container">')
 print('<h2 id="nwkid">nwkid</h2>')
-print('<p><b>13</b>: The Things Network</p>')
 
 c = mydb.cursor()
 c.execute('select (nwkaddr >> 1) & 127 as nwkid, count(*) as n from rxpk group by (nwkaddr >> 1) & 127')
@@ -272,11 +271,11 @@ data = sorted(data, key=lambda elem: elem[0])
 
 print('<table>')
 
-print('<tr><th>nwkid</th><th>%</th><th></th></tr>')
+print('<tr><th>network name</th><th>nwkid</th><th>%</th><th></th></tr>')
 for d in data:
     stars = '&#9619;' * int(30 * (d[1] / n_rows))
 
-    print(f'<tr><td title="{netids[d[0]]}">{d[0]:02x}</td>')
+    print(f'<tr><td>{netids[d[0]]}</td><td>{d[0]:02x}</td>')
     print(f'<td title="{d[1]}">{d[1] * 100 / n_rows:.2f}</td><td>{stars}</td></tr>')
 
 print('</table>')

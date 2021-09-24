@@ -2,8 +2,6 @@
 
 # pip3 install mysql-connector-python
 
-# create table rxpk(tmst bigint, time datetime, tmms bigint, chan int, rfch int, freq double, stat int, modu varchar(16), datr varchar(16), codr varchar(16), lsnr double, rssi double, size int, raw_data varchar(256), mtype tinyint, rfu tinyint, major tinyint, nwkid tinyint, nwkaddr bigint, fctrl tinyint, fopts blob, fcnt int, payload blob);
-
 import base64
 from dateutil import parser
 import json
@@ -54,7 +52,6 @@ def dissect_data(data):
     if identifier == 0x00:  # PUSH_DATA
         json_str = data[12:]
 
-        # {'rxpk': [{'tmst': 2237882236, 'time': '2021-09-21T06:45:31.117846Z', 'tmms': 1316241949117, 'chan': 5, 'rfch': 0, 'freq': 867.5, 'stat': 1, 'modu': 'LORA', 'datr': 'SF7BW125', 'codr': '4/5', 'lsnr': 6.8, 'rssi': -78, 'size': 14, 'data': 'QPdGCyYAAwABYlsSHec='}]}
         j = json.loads(json_str)
 
         if 'rxpk' in j:
@@ -71,7 +68,7 @@ def dissect_data(data):
                 fhdr = raw[1:]
                 devaddr = fhdr[0:4]
 
-                nwkid = devaddr[0] >> 1 #
+                nwkid = devaddr[3] >> 1 #
 
                 nwkaddr = (devaddr[0] << 24) | (devaddr[1] << 16) | (devaddr[2] << 8) | devaddr[3]
 
@@ -107,20 +104,44 @@ def dissect_data(data):
 
     elif identifier == 0x03:  # ack van de 0x04 met data om te versturen via rf
         json_str = data[4:]
-        print(identifier, json_str)
+
+        j = json.loads(json_str)
+
+        if 'txpk' in j:
+            p = j['txpk']
+
+            c = mydb.cursor()
+
+            raw = base64.b64decode(p['data'])
+
+            mhdr = raw[0]
+            mtype = mhdr >> 5       #
+            rfu = (mhdr >> 2) & 7   #
+            major = mhdr & 3        #
+
+            fhdr = raw[1:]
+            devaddr = fhdr[0:4]
+
+            nwkid = devaddr[3] >> 1 #
+
+            nwkaddr = (devaddr[0] << 24) | (devaddr[1] << 16) | (devaddr[2] << 8) | devaddr[3]
+
+            # {'txpk': {'imme': False, 'tmst': 2242882236, 'freq': 867.5, 'rfch': 0, 'powe': 14, 'modu': 'LORA', 'datr': 'SF7BW125', 'codr': '4/5', 'ipol': True, 'size': 13, 'ncrc': True, 'data': 'YPdGCyaBAwAGfLIS7Q=='}}
+
+            # create table txpk(ts datetime not null, imme int(1), tmst bigint, tmms bigint, freq double, rfch int, powe int, modu varchar(16), datr varchar(16), codr varchar(16), fdev double, ipol int(1), prea int, size int, raw_data varchar(256), ncrc int(1), mtype tinyint, nwkid tinyint, nwkaddr bigint)
+
+            sql = 'INSERT INTO txpk(ts, imme, tmst, freq, rfch, powe, modu, datr, codr, ipol, size, raw_data, ncrc, mtype, nwkid, nwkaddr) VALUES(NOW(), %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'
+
+            values = [ (p['imme'], p['tmst'], p['freq'], p['rfch'], p['powe'], p['modu'], p['datr'], p['codr'], p['ipol'], p['size'], p['data'], p['ncrc'], mtype, nwkid, nwkaddr) ]
+
+            c.executemany(sql, values)
+            mydb.commit()
 
     elif identifier == 0x05:  # ack van de 0x03
         pass
 
     else:
         print(time.ctime(), identifier, data)
-
-        # {'txpk': {'imme': False, 'tmst': 2242882236, 'freq': 867.5, 'rfch': 0, 'powe': 14, 'modu': 'LORA', 'datr': 'SF7BW125', 'codr': '4/5', 'ipol': True, 'size': 13, 'ncrc': True, 'data': 'YPdGCyaBAwAGfLIS7Q=='}}
-
-#        j = json.loads(json_str)
-
-#        if 'txpk' in j:
-#            print(j)
 
 while True:
     fdVsEvent = poller.poll(None)
@@ -140,6 +161,9 @@ while True:
             # print(addr, data)
             if UDP_IP_gw != None:
                 sock_local.sendto(data, (UDP_IP_gw, UDP_PORT_gw))
+
+            else:
+                print('GW ip not yet known, dropping packet')
 
             dissect_data(data)
 

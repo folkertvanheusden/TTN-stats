@@ -10,6 +10,7 @@ import json
 import mysql.connector
 import select
 import socket
+import time
 
 UDP_IP_local = '0.0.0.0'
 UDP_PORT_local = 1700
@@ -56,8 +57,6 @@ def dissect_data(data):
         # {'rxpk': [{'tmst': 2237882236, 'time': '2021-09-21T06:45:31.117846Z', 'tmms': 1316241949117, 'chan': 5, 'rfch': 0, 'freq': 867.5, 'stat': 1, 'modu': 'LORA', 'datr': 'SF7BW125', 'codr': '4/5', 'lsnr': 6.8, 'rssi': -78, 'size': 14, 'data': 'QPdGCyYAAwABYlsSHec='}]}
         j = json.loads(json_str)
 
-        print(j)
-
         if 'rxpk' in j:
             for p in j['rxpk']:
                 c = mydb.cursor()
@@ -97,12 +96,28 @@ def dissect_data(data):
                 mydb.commit()
 
 
-    elif identifier == 0x03:  # PULL_RESP
+    elif identifier == 0x01:  # ACK van 0x00 (rx van hf)
+        pass
+
+    elif identifier == 0x02:  # pull data from server (soort keep-alive)0x02:  # pull data from server (soort keep-alive)
+        pass
+
+    elif identifier == 0x04:  # ack van de 0x02 pull
+        pass
+
+    elif identifier == 0x03:  # ack van de 0x04 met data om te versturen via rf
         json_str = data[4:]
+        print(identifier, json_str)
+
+    elif identifier == 0x05:  # ack van de 0x03
+        pass
+
+    else:
+        print(time.ctime(), identifier, data)
 
         # {'txpk': {'imme': False, 'tmst': 2242882236, 'freq': 867.5, 'rfch': 0, 'powe': 14, 'modu': 'LORA', 'datr': 'SF7BW125', 'codr': '4/5', 'ipol': True, 'size': 13, 'ncrc': True, 'data': 'YPdGCyaBAwAGfLIS7Q=='}}
 
-        j = json.loads(json_str)
+#        j = json.loads(json_str)
 
 #        if 'txpk' in j:
 #            print(j)

@@ -22,6 +22,8 @@ Create a database:
 
     create table rxpk(tmst bigint, time datetime, tmms bigint, chan int, rfch int, freq double, stat int, modu varchar(16), datr varchar(16), codr varchar(16), lsnr double, rssi double, size int, raw_data varchar(256), mtype tinyint, rfu tinyint, major tinyint, nwkid tinyint, nwkaddr bigint, fctrl tinyint, fopts blob, fcnt int, payload blob);
 
+    create table txpk(ts datetime not null, imme int(1), tmst bigint, tmms bigint, freq double, rfch int, powe int, modu varchar(16), datr varchar(16), codr varchar(16), fdev double, ipol int(1), prea int, size int, raw_data varchar(256), ncrc int(1), mtype tinyint, nwkid tinyint, nwkaddr bigint);
+
     CREATE TABLE `data_rates` ( `datr_str` varchar(16) NOT NULL, `bits_s` int(11) DEFAULT NULL, PRIMARY KEY (`datr_str`));
     INSERT INTO `data_rates` VALUES ('SF10BW125',980),('SF11BW125',440),('SF12BW125',250),('SF7BW125',5470),('SF7BW250',11000),('SF8BW125',3125),('SF9BW125',1760);
 

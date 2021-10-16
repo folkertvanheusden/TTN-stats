@@ -7,7 +7,7 @@ def header():
     print('<!DOCTYPE html>')
     print('<html>')
     print('<head>')
-    print('<title>TTN via LoRaWAN statistics</title>')
+    print('<title>packets transmitted for TTN via LoRaWAN statistics</title>')
     print('<link href="stylesheet.css" rel="stylesheet" type="text/css">')
     print('<meta name="viewport" content="width=device-width, initial-scale=1">')
     print('<meta http-equiv="refresh" content="300"/>')
@@ -15,7 +15,7 @@ def header():
     print('</head>')
     print('<body>')
 
-    print('<h1>TTN via LoRaWAN statistics</h1>')
+    print('<h1>packets transmitted for TTN via LoRaWAN statistics</h1>')
 
     print('<p><b>NOTE: AIR-TIME CALCULATION IS CURRENTLY OPTIMISTIC</b></p>')
 

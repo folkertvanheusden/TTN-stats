@@ -27,8 +27,9 @@ print('<li><a href="#rssi">Spreading of RSSI values</a>')
 print('<li><a href="#pll">Spreading of payload lengths</a>')
 print('<li><a href="#fopts">fopts frequency (how often are they repeated)</a>')
 print('<li><a href="#mf">Message frequency</a>')
-print('<li><a href="#at">Air time</a>')
+print('<li><a href="at.py">Air time</a> (new page)')
 print('<li><a href="#udev">Number of unique devices per day</a>')
+print('<li><a href="tx.py">Transmitted packets</a>')
 print('</ul>')
 print('</div>')
 
@@ -40,7 +41,7 @@ first = row[1]
 latest = row[2]
 n_udev = row[3]
 
-## DATR ###
+## general ###
 
 print('<div class="container">')
 print('<h2 id="general">General</h2>')
@@ -136,7 +137,7 @@ for (freq, n) in c:
 print('</table>')
 print('</div>')
 
-## frequency ###
+## mtype ###
 
 print('<div class="container">')
 print('<h2 id="mtype">mtype</h2>')
@@ -262,34 +263,6 @@ for (payload, n) in c:
     print(f'<tr><td>{payload}</td><td>{n * 100 / n_rows:.2f}</td><td>{n}</td></tr>')
 
 print('</table>')
-print('</div>')
-
-## air time per hour ##
-
-print('<div class="container">')
-print('<h2 id="at">air time per hour</h2>')
-
-c.execute('select h, avg(ms_airtime) as avg_ma, min(ms_airtime) as minimum, max(ms_airtime) as maximum from (select hour(time) as h, sum(size * 8 / bits_s) as ms_airtime from rxpk, (select bits_s from rxpk, data_rates where datr_str=rxpk.datr) as rate group by date(time), hour(time)) as bla group by h')
-
-print('<table><tr><th>hour</th><th>minimum</th><th>maximum</th><th>avg % of hour</th><th>avg total</th><th></th></tr>')
-
-data = []
-max_avg = -1
-
-for (h, avg_ma, minimum, maximum) in c:
-    data.append((h, avg_ma, minimum, maximum))
-
-    if avg_ma > max_avg:
-        max_avg = avg_ma
-
-for (h, avg_ma, minimum, maximum) in data:
-
-    stars = '&#9619;' * int(30 * (avg_ma / max_avg))
-
-    print(f'<tr><td>{h}</td><td>{minimum:.2f}ms</td><td>{maximum:.2f}ms</td><td>{avg_ma * 100 / 3600000:.2f}%</td><td>{avg_ma:.2f}ms</td><td>{stars}</tr>')
-
-print('</table>')
-
 print('</div>')
 
 ## number of unique devices per day ##

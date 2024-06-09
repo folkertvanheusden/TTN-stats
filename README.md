@@ -48,10 +48,21 @@ Copy the files in a directory and adjust the apache configuration:
         DirectoryIndex index.py
     </Directory>
 
+For nginx:
+
+    location ~ ^/ttn {
+        root /var/www/htdocs/ttn
+
+        include fastcgi_params;
+        fastcgi_pass unix:/var/run/fcgiwrap.socket;
+        fastcgi_param SCRIPT_FILENAME /var/www/htdocs/ttn/../$fastcgi_script_name;
+    }
+
+
 Adjust the mysql parameters (mysql.connector.connect()) at the top of index.py.
 
 
 demo
 ----
 
-https://keetweej.vanheusden.com/ttn/
+https://vps001.vanheusden.com/t-cgi/index.py

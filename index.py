@@ -6,8 +6,8 @@ from header import header, tail
 import mysql.connector
 import socket
 
-mydb = mysql.connector.connect(host='mauer', user='ttnq', password='qntt', database='ttn')
-mydb2 = mysql.connector.connect(host='mauer', user='ttnq', password='qntt', database='ttn')
+mydb = mysql.connector.connect(host='localhost', user='ttnq', password='qntt', database='ttn')
+mydb2 = mysql.connector.connect(host='localhost', user='ttnq', password='qntt', database='ttn')
 
 header()
 

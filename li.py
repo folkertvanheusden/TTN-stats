@@ -30,7 +30,7 @@ poller = select.poll()
 poller.register(sock_local, select.POLLIN)
 poller.register(sock_target, select.POLLIN)
 
-mydb = mysql.connector.connect(host='mauer', user='ttn', password='ntt', database='ttn')
+mydb = mysql.connector.connect(host='127.0.0.1', user='ttn', password='ntt', database='ttn')
 
 def make_signed_8b(v):
     if v > 127:
@@ -51,6 +51,9 @@ def dissect_data(data):
 
     if identifier == 0x00:  # PUSH_DATA
         json_str = data[12:]
+
+        gateway_ui = data[4:12]
+        gateway_ui_str = gateway_ui.hex(':')
 
         j = json.loads(json_str)
 
@@ -83,11 +86,11 @@ def dissect_data(data):
                     fopts = fhdr[7:7 + foptslen]        #
                     payload = fhdr[7 + foptslen:]
 
-                sql = 'INSERT INTO rxpk(tmst, time, tmms, chan, rfch, freq, stat, modu, datr, codr, lsnr, rssi, size, raw_data, mtype, rfu, major, nwkid, nwkaddr, fctrl, fopts, payload, fcnt) VALUES(%s, FROM_UNIXTIME(%s),  %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'
+                sql = 'INSERT INTO rxpk(gwui, tmst, time, tmms, chan, rfch, freq, stat, modu, datr, codr, lsnr, rssi, size, raw_data, mtype, rfu, major, nwkid, nwkaddr, fctrl, fopts, payload, fcnt) VALUES(%s, %s, FROM_UNIXTIME(%s),  %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'
 
                 t = int(parser.parse(p['time']).timestamp())
 
-                values = [ (p['tmst'], t, p['tmms'], p['chan'], p['rfch'], p['freq'], p['stat'], p['modu'], p['datr'], p['codr'], p['lsnr'], p['rssi'], p['size'], p['data'], mtype, rfu, major, nwkid, nwkaddr, fctrl, fopts, payload, fcnt) ]
+                values = [ (gateway_ui_str, p['tmst'], t, p['tmms'], p['chan'], p['rfch'], p['freq'], p['stat'], p['modu'], p['datr'], p['codr'], p['lsnr'], p['rssi'], p['size'], p['data'], mtype, rfu, major, nwkid, nwkaddr, fctrl, fopts, payload, fcnt) ]
 
                 c.executemany(sql, values)
                 mydb.commit()

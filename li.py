@@ -86,11 +86,15 @@ def dissect_data(data):
                     fopts = fhdr[7:7 + foptslen]        #
                     payload = fhdr[7 + foptslen:]
 
-                sql = 'INSERT INTO rxpk(gwui, tmst, time, tmms, chan, rfch, freq, stat, modu, datr, codr, lsnr, rssi, size, raw_data, mtype, rfu, major, nwkid, nwkaddr, fctrl, fopts, payload, fcnt) VALUES(%s, %s, FROM_UNIXTIME(%s),  %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'
-
                 t = int(parser.parse(p['time']).timestamp())
 
-                values = [ (gateway_ui_str, p['tmst'], t, p['tmms'], p['chan'], p['rfch'], p['freq'], p['stat'], p['modu'], p['datr'], p['codr'], p['lsnr'], p['rssi'], p['size'], p['data'], mtype, rfu, major, nwkid, nwkaddr, fctrl, fopts, payload, fcnt) ]
+                if 'codr' in p and 'lsnr' in p:
+                    sql = 'INSERT INTO rxpk(gwui, tmst, time, tmms, chan, rfch, freq, stat, modu, datr, codr, lsnr, rssi, size, raw_data, mtype, rfu, major, nwkid, nwkaddr, fctrl, fopts, payload, fcnt) VALUES(%s, %s, FROM_UNIXTIME(%s),  %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'
+                    values = [ (gateway_ui_str, p['tmst'], t, p['tmms'], p['chan'], p['rfch'], p['freq'], p['stat'], p['modu'], p['datr'], p['codr'], p['lsnr'], p['rssi'], p['size'], p['data'], mtype, rfu, major, nwkid, nwkaddr, fctrl, fopts, payload, fcnt) ]
+
+                else:
+                    sql = 'INSERT INTO rxpk(gwui, tmst, time, tmms, chan, rfch, freq, stat, modu, datr, rssi, size, raw_data, mtype, rfu, major, nwkid, nwkaddr, fctrl, fopts, payload, fcnt) VALUES(%s, %s, FROM_UNIXTIME(%s),  %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'
+                    values = [ (gateway_ui_str, p['tmst'], t, p['tmms'], p['chan'], p['rfch'], p['freq'], p['stat'], p['modu'], p['datr'], p['rssi'], p['size'], p['data'], mtype, rfu, major, nwkid, nwkaddr, fctrl, fopts, payload, fcnt) ]
 
                 c.executemany(sql, values)
                 mydb.commit()
@@ -152,7 +156,7 @@ while True:
     for fd, event in fdVsEvent:
         if fd == sock_local.fileno():
             data, addr = sock_local.recvfrom(65536)
-            # print(addr, data)
+            print(addr, data)
             sock_target.sendto(data, (UDP_IP_target, UDP_PORT_target))
 
             UDP_IP_gw, UDP_PORT_gw = addr
@@ -161,7 +165,7 @@ while True:
 
         elif fd == sock_target.fileno():
             data, addr = sock_target.recvfrom(65536)
-            # print(addr, data)
+            print(addr, data)
             if UDP_IP_gw != None:
                 sock_local.sendto(data, (UDP_IP_gw, UDP_PORT_gw))
 

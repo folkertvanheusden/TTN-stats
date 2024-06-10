@@ -64,7 +64,9 @@ c.execute('select time, chan, freq, datr, codr, lsnr, rssi, mtype, nwkaddr, (nwk
 print('<table><tr><th>time</th><th>channel</th><th>frequency</th><th>datr</th><th>codr</th><th>lsnr</th><th>rssi</th><th>mtype</th><th>nwkaddr</th><th>nwkid</th></tr>')
 
 for (time, chan, freq, datr, codr, lsnr, rssi, mtype, nwkaddr, nwkid) in c:
-    print(f'<tr><td>{time}</td><td>{chan}</td><td>{freq}MHz</td><td>{datr}</td><td>{codr}</td><td>{lsnr}dB</td><td>{rssi}dBm</td><td>{mtype_to_str(mtype)}</td><td>{nwkaddr:08x}</td><td>{netids[nwkid]}</td></tr>')
+    lsnr = f'{lsnr} dB' if lsnr != None else ''
+    codr = f'{codr}' if codr != None else ''
+    print(f'<tr><td>{time}</td><td>{chan}</td><td>{freq}MHz</td><td>{datr}</td><td>{codr}</td><td>{lsnr}</td><td>{rssi}dBm</td><td>{mtype_to_str(mtype)}</td><td>{nwkaddr:08x}</td><td>{netids[nwkid]}</td></tr>')
 
 print('</table>')
 

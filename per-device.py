@@ -33,7 +33,7 @@ idx = 0
 
 for (nwkaddr, a_rssi, min_rssi, max_rssi, a_lsnr, a_size, sd_size, n_msgs, nwkid) in c:
     if (idx % 5) == 0:
-        print('<table border=2><tr bgcolor="#a0ffa0"><th>nwkaddr</th><th>avg rssi</th><th>avg lsnr</th><th>avg payload size</th><th>sd payload size</th><th># msgs</th><th>avg air time</th><th>avg # msgs/day</th></tr>')
+        print('<table><tr><th>nwkaddr</th><th>avg rssi</th><th>avg lsnr</th><th>avg payload size</th><th>sd payload size</th><th># msgs</th><th>avg air time</th><th>avg # msgs/day</th></tr>')
         print('<tr><th>nwkid</th><th>first msg</th><th>last msg</th><th colspan=2>current avg total air time per day</th><th colspan=2>expected avg total air time per day</th><th title="TTN fair-use-policy">% FAP</th></tr>')
 
     idx += 1
@@ -52,7 +52,7 @@ for (nwkaddr, a_rssi, min_rssi, max_rssi, a_lsnr, a_size, sd_size, n_msgs, nwkid
     else:
         a_lsnr = f'{a_lsnr:.02f}'
 
-    print(f'<tr title="{nwkaddr}" id="dev_{adj_nwkaddr}" bgcolor="#a0ffa0"><td>{adj_nwkaddr:08x}</td><td title="min: {min_rssi:.02f}, max: {max_rssi:.02f}">{a_rssi:.02f}dBm</td><td>{a_lsnr}dB</td><td>{a_size:.02f}B</td><td>{sd_size:.02f}</td><td>{n_msgs}</td><td>{row[0]:.2f}ms</td><td>{msgs_per_day:.0f}</td></tr>')
+    print(f'<tr title="{nwkaddr}" id="dev_{adj_nwkaddr}"><td>{adj_nwkaddr:08x}</td><td title="min: {min_rssi:.02f}, max: {max_rssi:.02f}">{a_rssi:.02f}dBm</td><td>{a_lsnr}dB</td><td>{a_size:.02f}B</td><td>{sd_size:.02f}</td><td>{n_msgs}</td><td>{row[0]:.2f}ms</td><td>{msgs_per_day:.0f}</td></tr>')
 
     expected_avg_total_air_time_per_day = float(msgs_per_day * row[0])
 

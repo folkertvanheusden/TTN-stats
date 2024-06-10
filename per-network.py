@@ -33,7 +33,7 @@ idx = 0
 
 for (nwkid, a_rssi, a_lsnr, a_size, sd_size, n_msgs) in c:
     if (idx % 5) == 0:
-        print('<table border=2><tr bgcolor="#a0ffa0"><th>nwkid</th><th>avg rssi</th><th>avg lsnr</th><th>avg payload size</th><th>sd payload size</th><th># msgs</th><th>avg air time</th><th>avg # msgs/day</th></tr>')
+        print('<table><tr><th>nwkid</th><th>avg rssi</th><th>avg lsnr</th><th>avg payload size</th><th>sd payload size</th><th># msgs</th><th>avg air time</th><th>avg # msgs/day</th></tr>')
         print('<tr><th></th><th>first msg</th><th>last msg</th><th colspan=2>current avg total air time per day</th><th colspan=2>expected avg total air time per day</th><th title="TTN fair-use-policy">% FAP</th></tr>')
 
     idx += 1
@@ -50,7 +50,7 @@ for (nwkid, a_rssi, a_lsnr, a_size, sd_size, n_msgs) in c:
     else:
         a_lsnr = f'{a_lsnr:.02f}'
 
-    print(f'<tr title="{nwkid}" id="dev_{nwkid}" bgcolor="#a0ffa0"><td></td><td>{a_rssi:.02f}dBm</td><td>{a_lsnr}dB</td><td>{a_size:.02f}B</td><td>{sd_size:.02f}</td><td>{n_msgs}</td><td>{row[0]:.2f}ms</td><td>{msgs_per_day:.0f}</td></tr>')
+    print(f'<tr title="{nwkid}" id="dev_{nwkid}"><td></td><td>{a_rssi:.02f}dBm</td><td>{a_lsnr}dB</td><td>{a_size:.02f}B</td><td>{sd_size:.02f}</td><td>{n_msgs}</td><td>{row[0]:.2f}ms</td><td>{msgs_per_day:.0f}</td></tr>')
 
     expected_avg_total_air_time_per_day = float(msgs_per_day * row[0])
 
